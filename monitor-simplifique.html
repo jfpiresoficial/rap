@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#660099" />
+<title>Monitor Simplifique · Vivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        vivo: {
+          DEFAULT:'#660099',
+          50:'#F5E6FF',100:'#E4C2FF',200:'#C98AFF',300:'#AC52FF',400:'#8E1FFF',
+          500:'#660099',600:'#52007A',700:'#3D005C',800:'#29003D',900:'#14001F'
+        },
+        magenta:'#E5007D',
+        ink: {
+          950:'#08060C',900:'#0E0B14',800:'#15111E',700:'#1F1A2C',
+          600:'#2A2440',500:'#3A3158',400:'#5B5078',300:'#8A82A3',200:'#B8B2CC',100:'#E2DFEC'
+        }
+      },
+      fontFamily: {
+        display:['"Space Grotesk"','system-ui','sans-serif'],
+        sans:['"Inter"','system-ui','sans-serif'],
+        mono:['"JetBrains Mono"','monospace']
+      },
+      boxShadow: {
+        'glow-vivo':'0 0 40px -5px rgba(172,82,255,0.45)',
+        'glow-magenta':'0 0 40px -5px rgba(229,0,125,0.45)'
+      },
+      animation: {
+        'fade-in':'fadeIn .5s ease-out',
+        'slide-up':'slideUp .4s ease-out',
+        'glow-pulse':'glowPulse 2.4s ease-in-out infinite'
+      },
+      keyframes: {
+        fadeIn:{'0%':{opacity:0},'100%':{opacity:1}},
+        slideUp:{'0%':{transform:'translateY(12px)',opacity:0},'100%':{transform:'translateY(0)',opacity:1}},
+        glowPulse:{
+          '0%,100%':{boxShadow:'0 0 24px -4px rgba(172,82,255,.35)'},
+          '50%':{boxShadow:'0 0 48px -2px rgba(172,82,255,.7)'}
+        }
+      }
+    }
+  }
+}
+</script>
+<style>
+  html,body,#root{height:100%}
+  body{
+    background:#08060C;
+    color:#E2DFEC;
+    font-family:'Inter',system-ui,sans-serif;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(102,0,153,.25), transparent),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(229,0,125,.10), transparent);
+    background-attachment:fixed;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:#0E0B14}
+  ::-webkit-scrollbar-thumb{background:#2A2440;border-radius:8px;border:2px solid #0E0B14}
+  ::-webkit-scrollbar-thumb:hover{background:#3A3158}
+
+  .glass{background:rgba(21,17,30,.6);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.05);box-shadow:inset 0 1px 0 0 rgba(255,255,255,.05)}
+  .glass-strong{background:rgba(21,17,30,.8);backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 0 rgba(255,255,255,.05)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-weight:500;border-radius:.75rem;padding:.625rem 1.25rem;transition:all .2s;user-select:none;cursor:pointer;border:none;font-family:inherit;color:#fff;font-size:.95rem}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-primary{background:linear-gradient(135deg,#AC52FF,#660099);color:white}
+  .btn-primary:hover:not(:disabled){background:linear-gradient(135deg,#C98AFF,#8E1FFF);box-shadow:0 0 40px -5px rgba(172,82,255,.45)}
+  .btn-danger{background:linear-gradient(135deg,#f43f5e,#9f1239);color:white}
+  .btn-danger:hover:not(:disabled){box-shadow:0 0 30px -5px rgba(244,63,94,.55)}
+  .btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#E2DFEC}
+  .btn-ghost:hover{background:rgba(255,255,255,.1)}
+
+  .card{background:rgba(21,17,30,.6);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.05);border-radius:1rem;padding:1.5rem}
+
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 80%);
+  }
+  .aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .aurora::before,.aurora::after{
+    content:'';position:absolute;border-radius:9999px;filter:blur(80px);opacity:.35;
+    animation:float 14s ease-in-out infinite;
+  }
+  .aurora::before{width:480px;height:480px;background:radial-gradient(circle,#AC52FF,transparent 70%);top:-120px;left:-120px}
+  .aurora::after{width:380px;height:380px;background:radial-gradient(circle,#E5007D,transparent 70%);bottom:-100px;right:-80px;animation-delay:-6s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.08)}}
+
+  @keyframes ping-soft{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.2);opacity:0}}
+  .ping-ring::before{content:'';position:absolute;inset:0;border-radius:9999px;border:2px solid currentColor;animation:ping-soft 1.6s cubic-bezier(0,0,.2,1) infinite}
+
+  .status-dot{display:inline-block;width:.625rem;height:.625rem;border-radius:9999px}
+  @keyframes pulse-soft{0%,100%{opacity:1}50%{opacity:.6}}
+  .pulse{animation:pulse-soft 2s cubic-bezier(.4,0,.6,1) infinite}
+  @keyframes ping{75%,100%{transform:scale(2);opacity:0}}
+  .animate-ping{animation:ping 1.8s cubic-bezier(0,0,.2,1) infinite}
+
+  .tabular-nums{font-variant-numeric:tabular-nums}
+
+  /* fade transitions between screens */
+  .screen{animation:fadeIn .4s ease-out}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50;animation:fadeIn .2s}
+  .modal-box{animation:scaleIn .3s cubic-bezier(.22,1,.36,1)}
+  @keyframes scaleIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+  /* toast */
+  .toast{position:fixed;top:1.5rem;right:1.5rem;z-index:60;animation:toastIn .35s cubic-bezier(.22,1,.36,1)}
+  @keyframes toastIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+
+  /* user avatar gradients */
+  .av-joao{background:linear-gradient(135deg,#22d3ee,#2563eb)}
+  .av-joana{background:linear-gradient(135deg,#e879f9,#db2777)}
+  .av-ariane{background:linear-gradient(135deg,#fcd34d,#f97316)}
+  .av-mirela{background:linear-gradient(135deg,#34d399,#0d9488)}
+  .av-default{background:linear-gradient(135deg,#AC52FF,#660099)}
+
+  /* hide scrollbar on mobile horizontal scroll */
+  .nowrap-scroll{display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none}
+  .nowrap-scroll::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ============================================================
+  ICON COMPONENTS (inline SVG to avoid network deps)
+============================================================ -->
+<script>
+const Icon = (path, props={}) => {
+  const {size=18, cls=''} = props
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}">${path}</svg>`
+}
+const Icons = {
+  arrowRight: (p)=>Icon(`<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>`,p),
+  arrowLeft:  (p)=>Icon(`<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>`,p),
+  play:       (p)=>Icon(`<polygon points="5 3 19 12 5 21 5 3"/>`,p),
+  square:     (p)=>Icon(`<rect x="5" y="5" width="14" height="14" rx="1"/>`,p),
+  history:    (p)=>Icon(`<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/>`,p),
+  logout:     (p)=>Icon(`<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>`,p),
+  bell:       (p)=>Icon(`<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>`,p),
+  bellOff:    (p)=>Icon(`<path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/>`,p),
+  alert:      (p)=>Icon(`<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`,p),
+  check:      (p)=>Icon(`<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,p),
+  activity:   (p)=>Icon(`<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`,p),
+  users:      (p)=>Icon(`<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`,p),
+  clock:      (p)=>Icon(`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,p),
+  trending:   (p)=>Icon(`<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>`,p),
+  shield:     (p)=>Icon(`<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>`,p),
+  zap:        (p)=>Icon(`<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>`,p),
+  radio:      (p)=>Icon(`<circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>`,p),
+  filter:     (p)=>Icon(`<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>`,p),
+  x:          (p)=>Icon(`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,p),
+  info:       (p)=>Icon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`,p),
+  refresh:    (p)=>Icon(`<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>`,p),
+}
+</script>
+
+<!-- ============================================================
+  STATE MANAGEMENT - Simulação realtime via localStorage
+  Em produção isso é substituído pelo Supabase
+============================================================ -->
+<script>
+const TEAM = ['João','Joana','Ariane','Mirela']
+const KEY_SESSION = 'ms_session'
+const KEY_HISTORY = 'ms_history'
+const KEY_ONLINE  = 'ms_online'
+const KEY_USER    = 'ms_user'
+
+// ----- State helpers -----
+function getSession(){
+  try { return JSON.parse(localStorage.getItem(KEY_SESSION)) || { user:null, startedAt:null } }
+  catch { return { user:null, startedAt:null } }
+}
+function setSession(s){
+  localStorage.setItem(KEY_SESSION, JSON.stringify(s))
+  // dispara evento local (storage event só vai para outras abas)
+  window.dispatchEvent(new Event('ms-state'))
+}
+function getHistory(){
+  try { return JSON.parse(localStorage.getItem(KEY_HISTORY)) || [] }
+  catch { return [] }
+}
+function setHistory(h){
+  localStorage.setItem(KEY_HISTORY, JSON.stringify(h))
+  window.dispatchEvent(new Event('ms-state'))
+}
+function getOnline(){
+  try { return JSON.parse(localStorage.getItem(KEY_ONLINE)) || {} }
+  catch { return {} }
+}
+function setOnline(o){
+  localStorage.setItem(KEY_ONLINE, JSON.stringify(o))
+  window.dispatchEvent(new Event('ms-state'))
+}
+function pruneOnline(){
+  const o = getOnline()
+  const now = Date.now()
+  let changed = false
+  for(const k in o){
+    if(now - o[k] > 45_000){ delete o[k]; changed = true }
+  }
+  if(changed) setOnline(o)
+  return o
+}
+
+// Initial seed (se ainda não tem dados)
+if(!localStorage.getItem(KEY_HISTORY)){
+  // Dados demo para o histórico parecer realista
+  const now = Date.now()
+  const demo = [
+    { id:'h1', user:'Joana',  startedAt: now - 86400000*1 - 3600*2*1000, endedAt: now - 86400000*1 - 3500*1000, duration: 6700 },
+    { id:'h2', user:'João',   startedAt: now - 86400000*1 - 1800*1000,   endedAt: now - 86400000*1 - 600*1000,   duration: 1200 },
+    { id:'h3', user:'Ariane', startedAt: now - 86400000*0.5,             endedAt: now - 86400000*0.5 + 2700*1000, duration: 2700 },
+    { id:'h4', user:'Mirela', startedAt: now - 3600*4*1000,              endedAt: now - 3600*3.6*1000,           duration: 1500 },
+    { id:'h5', user:'João',   startedAt: now - 3600*2*1000,              endedAt: now - 3600*1.5*1000,           duration: 1820 },
+    { id:'h6', user:'Joana',  startedAt: now - 3600*1*1000,              endedAt: now - 3600*0.4*1000,           duration: 2160 },
+  ]
+  setHistory(demo)
+}
+
+// ----- Actions -----
+function startUsing(user){
+  const cur = getSession()
+  if(cur.user && cur.user !== user) return { ok:false, by:cur.user }
+  setSession({ user, startedAt: cur.startedAt || new Date().toISOString() })
+  return { ok:true }
+}
+function stopUsing(user){
+  const cur = getSession()
+  if(!cur.user || cur.user !== user) return { ok:false }
+  const startedAt = new Date(cur.startedAt).getTime()
+  const endedAt = Date.now()
+  const item = {
+    id:'h_'+endedAt+'_'+Math.random().toString(36).slice(2,6),
+    user,
+    startedAt: cur.startedAt,
+    endedAt: new Date(endedAt).toISOString(),
+    duration: Math.max(0, Math.floor((endedAt-startedAt)/1000))
+  }
+  const h = getHistory()
+  h.unshift(item)
+  setHistory(h.slice(0,200))
+  setSession({ user:null, startedAt:null })
+  return { ok:true }
+}
+function heartbeat(user){
+  const o = getOnline()
+  o[user] = Date.now()
+  setOnline(o)
+}
+function goOffline(user){
+  const o = getOnline()
+  delete o[user]
+  setOnline(o)
+}
+
+// ----- Formatters -----
+function pad(n){ return String(n).padStart(2,'0') }
+function formatDuration(sec){
+  if(sec==null||isNaN(sec)||sec<0) return '00:00'
+  const h = Math.floor(sec/3600)
+  const m = Math.floor((sec%3600)/60)
+  const s = Math.floor(sec%60)
+  return h>0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`
+}
+function timeAgo(date){
+  const diff = Math.max(0, Math.floor((Date.now()-new Date(date).getTime())/1000))
+  if(diff<60) return diff<=1 ? 'agora mesmo' : `há ${diff} segundos`
+  if(diff<3600){const m=Math.floor(diff/60);return `há ${m} minuto${m>1?'s':''}`}
+  if(diff<86400){const h=Math.floor(diff/3600);return `há ${h} hora${h>1?'s':''}`}
+  const d = Math.floor(diff/86400); return `há ${d} dia${d>1?'s':''}`
+}
+function formatDateTime(date){
+  return new Date(date).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+}
+
+// ----- Sound -----
+let _audio = null
+let _soundOn = true
+function audioCtx(){
+  if(!_audio){
+    try { _audio = new (window.AudioContext||window.webkitAudioContext)() } catch {}
+  }
+  return _audio
+}
+function playSound(type='start'){
+  if(!_soundOn) return
+  const ctx = audioCtx(); if(!ctx) return
+  const cfg = {
+    start:   {freqs:[523.25,659.25,783.99],dur:.28},
+    stop:    {freqs:[783.99,659.25,523.25],dur:.28},
+    conflict:{freqs:[220,196],dur:.18},
+    notify:  {freqs:[880,1108],dur:.16},
+  }[type] || {freqs:[600],dur:.2}
+  cfg.freqs.forEach((f,i)=>{
+    const osc = ctx.createOscillator(), gain = ctx.createGain()
+    osc.type='sine'; osc.frequency.value=f
+    osc.connect(gain).connect(ctx.destination)
+    const t0 = ctx.currentTime + i*0.08
+    gain.gain.setValueAtTime(0,t0)
+    gain.gain.linearRampToValueAtTime(.15,t0+.02)
+    gain.gain.exponentialRampToValueAtTime(.001,t0+cfg.dur)
+    osc.start(t0); osc.stop(t0+cfg.dur+.05)
+  })
+}
+</script>
+
+<!-- ============================================================
+  UI HELPERS (avatar, logo)
+============================================================ -->
+<script>
+function avatarClass(name){
+  return {
+    'João':'av-joao','Joana':'av-joana','Ariane':'av-ariane','Mirela':'av-mirela'
+  }[name] || 'av-default'
+}
+function avatar(name, opts={}){
+  const {size='md', online=false, busy=false} = opts
+  const sizes = {
+    xs:'w-7 h-7 text-xs', sm:'w-9 h-9 text-sm', md:'w-11 h-11 text-base',
+    lg:'w-14 h-14 text-lg', xl:'w-20 h-20 text-2xl'
+  }
+  const initial = (name||'?')[0]?.toUpperCase()
+  const dot = (online||busy) ? `
+    <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full ring-2 ring-ink-900
+      ${busy?'bg-rose-500':'bg-emerald-400'}">
+      ${busy?'<span class="absolute inset-0 rounded-full animate-ping bg-rose-500/60"></span>':''}
+    </span>` : ''
+  return `<div class="relative inline-flex">
+    <div class="${sizes[size]} rounded-full ${avatarClass(name)} flex items-center justify-center font-display font-semibold text-white ring-2 ring-ink-900 shadow-lg">${initial}</div>
+    ${dot}
+  </div>`
+}
+function logo(size='md', withText=true){
+  const s = {sm:{box:'w-8 h-8',t:'text-base',sub:'text-[10px]'},md:{box:'w-10 h-10',t:'text-lg',sub:'text-[11px]'},lg:{box:'w-14 h-14',t:'text-2xl',sub:'text-xs'}}[size]
+  return `<div class="flex items-center gap-3">
+    <div class="${s.box} relative rounded-xl bg-gradient-to-br from-vivo-300 to-vivo-600 shadow-glow-vivo flex items-center justify-center ring-1 ring-white/10">
+      <svg viewBox="0 0 24 24" fill="none" class="w-1/2 h-1/2 text-white"><path d="M4 6 L12 20 L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    ${withText?`<div class="leading-tight">
+      <div class="${s.t} font-display font-semibold tracking-tight text-white">Monitor <span class="text-vivo-300">Simplifique</span></div>
+      <div class="${s.sub} uppercase tracking-[0.25em] text-ink-300">Powered by Vivo</div>
+    </div>`:''}
+  </div>`
+}
+</script>
+
+<!-- ============================================================
+  APP - ROUTER + RENDER
+============================================================ -->
+<script>
+let currentUser = localStorage.getItem(KEY_USER) || null
+let route = currentUser ? 'dashboard' : 'login'
+let selectedOnLogin = null
+let conflict = null
+let toast = null
+let toastTimer = null
+let timerInterval = null
+let heartbeatInterval = null
+let prevSessionUser = undefined
+let historyFilter = 'Todos'
+
+function navigate(r){ route = r; render() }
+
+function showToast(type, msg){
+  toast = { type, message: msg }
+  if(toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(()=>{ toast=null; render() }, 4000)
+  render()
+}
+
+function setUser(u){
+  currentUser = u
+  localStorage.setItem(KEY_USER, u)
+  heartbeat(u)
+  navigate('dashboard')
+}
+function logout(){
+  if(currentUser) goOffline(currentUser)
+  currentUser = null
+  localStorage.removeItem(KEY_USER)
+  navigate('login')
+}
+
+// ---------- LOGIN ----------
+function renderLogin(){
+  return `
+  <div class="relative min-h-screen flex items-center justify-center px-4 py-10 overflow-hidden screen">
+    <div class="aurora"></div>
+    <div class="absolute inset-0 grid-bg pointer-events-none"></div>
+
+    <div class="relative w-full max-w-5xl grid lg:grid-cols-2 gap-10 items-center">
+      <div class="space-y-8">
+        ${logo('lg')}
+
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vivo-500/15 border border-vivo-400/30 text-vivo-200 text-xs uppercase tracking-[0.2em] font-medium mb-5">
+            ${Icons.radio({size:12,cls:'pulse'})} Tempo Real · Vivo
+          </div>
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-tight">
+            Controle compartilhado do
+            <span class="bg-gradient-to-r from-vivo-200 via-vivo-300 to-magenta bg-clip-text text-transparent">Simplifique</span>
+          </h1>
+          <p class="mt-4 text-ink-200 text-lg max-w-xl">
+            Saiba em tempo real quem está utilizando, evite conflitos e mantenha a equipe sincronizada — tudo direto do navegador.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-2">
+          <div class="flex items-center gap-3 text-sm text-ink-200">
+            ${Icons.shield({size:16,cls:'text-vivo-300'})}
+            <span>Vivo · A vida pede mais que tecnologia</span>
+          </div>
+          <div class="relative inline-block">
+            <div class="absolute -inset-3 bg-gradient-to-r from-vivo-500/20 to-magenta/20 blur-xl rounded-2xl"></div>
+            <p class="relative font-display text-xl sm:text-2xl font-semibold tracking-tight text-white">
+              <span class="text-magenta">"</span>DESISTIR É OPÇÃO SIM<span class="text-magenta">"</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 pt-4">
+          ${[
+            {icon:'zap',label:'Realtime'},
+            {icon:'radio',label:'Heartbeat'},
+            {icon:'shield',label:'Sem conflito'}
+          ].map(f=>`
+            <div class="glass rounded-xl p-3 flex items-center gap-2">
+              ${Icons[f.icon]({size:16,cls:'text-vivo-300'})}
+              <span class="text-xs text-ink-100">${f.label}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="glass-strong rounded-3xl p-7 lg:p-9 border border-white/10 shadow-2xl">
+        <div class="mb-6">
+          <div class="text-xs uppercase tracking-[0.25em] text-ink-300 mb-1">Identifique-se</div>
+          <h2 class="font-display text-2xl text-white font-semibold">Quem está acessando?</h2>
+        </div>
+
+        <ul class="space-y-2.5">
+          ${TEAM.map((name,i)=>`
+            <li style="animation-delay:${i*60}ms" class="animate-slide-up">
+              <button onclick="selectedOnLogin='${name}';render()" class="w-full group flex items-center gap-4 p-3.5 rounded-2xl border transition-all
+                ${selectedOnLogin===name
+                  ? 'bg-vivo-500/15 border-vivo-400/50 shadow-glow-vivo'
+                  : 'bg-white/[0.025] border-white/5 hover:bg-white/[0.05] hover:border-white/10'}">
+                ${avatar(name,{size:'md', online: selectedOnLogin===name})}
+                <div class="flex-1 text-left">
+                  <div class="text-white font-medium">${name}</div>
+                  <div class="text-xs text-ink-300">Equipe Simplifique</div>
+                </div>
+                ${Icons.arrowRight({size:20,cls: (selectedOnLogin===name?'text-vivo-200':'text-ink-400')})}
+              </button>
+            </li>`).join('')}
+        </ul>
+
+        <button onclick="if(selectedOnLogin) setUser(selectedOnLogin)" ${selectedOnLogin?'':'disabled'} class="btn btn-primary w-full mt-7 py-3 text-base">
+          Entrar no painel ${Icons.arrowRight({size:16})}
+        </button>
+
+        <p class="mt-4 text-[11px] text-center text-ink-400">Acesso interno · Uso restrito à equipe</p>
+      </div>
+    </div>
+  </div>`
+}
+
+// ---------- DASHBOARD ----------
+function renderDashboard(){
+  const session = getSession()
+  const online = pruneOnline()
+  const inUse = !!session.user
+  const isMe  = session.user === currentUser
+  const onlineNames = new Set(Object.keys(online))
+  const onlineCount = onlineNames.size
+
+  // status card
+  let statusCard
+  if(inUse){
+    statusCard = `
+      <div class="relative overflow-hidden rounded-3xl border p-8 transition-all duration-500
+        bg-gradient-to-br from-rose-950/40 via-ink-800/60 to-ink-900/60 border-rose-500/30 backdrop-blur-xl shadow-2xl">
+        <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-30 bg-rose-500/40 pointer-events-none"></div>
+        <div class="relative flex items-start justify-between gap-6 flex-wrap">
+          <div class="flex items-center gap-5">
+            ${avatar(session.user,{size:'xl',busy:true})}
+            <div>
+              <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium text-ink-300">
+                <span class="status-dot bg-rose-500 pulse"></span> Em uso
+              </div>
+              <h2 class="font-display text-3xl sm:text-4xl font-semibold text-white mt-1">
+                ${session.user} está utilizando<br class="hidden sm:block"/> o Simplifique
+              </h2>
+              <p class="text-ink-300 mt-2 text-sm flex items-center gap-2">
+                ${Icons.activity({size:14})} Iniciado ${timeAgo(session.startedAt)}
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="text-xs uppercase tracking-[0.25em] text-ink-300 mb-1">Tempo decorrido</div>
+            <div id="liveTimer" class="font-mono text-4xl sm:text-5xl font-semibold tabular-nums bg-gradient-to-r from-vivo-200 to-magenta bg-clip-text text-transparent">
+              ${formatDuration(Math.floor((Date.now()-new Date(session.startedAt).getTime())/1000))}
+            </div>
+          </div>
+        </div>
+      </div>`
+  } else {
+    statusCard = `
+      <div class="relative overflow-hidden rounded-3xl border p-8 transition-all duration-500
+        bg-gradient-to-br from-emerald-950/30 via-ink-800/60 to-ink-900/60 border-emerald-500/20 backdrop-blur-xl shadow-2xl">
+        <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-30 bg-emerald-500/30 pointer-events-none"></div>
+        <div class="relative flex items-center gap-5">
+          <div class="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+            ${Icons.check({size:40,cls:'text-emerald-400'})}
+          </div>
+          <div>
+            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium text-ink-300">
+              <span class="status-dot bg-emerald-400"></span> Livre
+            </div>
+            <h2 class="font-display text-3xl sm:text-4xl font-semibold text-white mt-1">Simplifique disponível</h2>
+          </div>
+        </div>
+      </div>`
+  }
+
+  // team list
+  const teamList = TEAM.map((name,i)=>{
+    const isOnline = onlineNames.has(name)
+    const isBusy = session.user === name
+    return `
+      <li style="animation-delay:${i*50}ms" class="animate-slide-up flex items-center justify-between p-3 rounded-xl ${isOnline?'bg-white/[0.03]':'opacity-50'} hover:bg-white/[0.05] transition">
+        <div class="flex items-center gap-3">
+          ${avatar(name,{size:'sm', online: isOnline && !isBusy, busy: isBusy})}
+          <div>
+            <div class="text-sm font-medium text-white">${name}</div>
+            <div class="text-[11px] uppercase tracking-wider text-ink-300">
+              ${isBusy?'Em uso': isOnline?'Online':'Offline'}
+            </div>
+          </div>
+        </div>
+        <span class="status-dot ${isBusy?'bg-rose-500 pulse': isOnline?'bg-emerald-400':'bg-ink-500'}"></span>
+      </li>`
+  }).join('')
+
+  return `
+  <div class="relative min-h-screen screen">
+    <div class="aurora opacity-60"></div>
+    <div class="absolute inset-0 grid-bg pointer-events-none"></div>
+
+    <header class="relative z-10 border-b border-white/5 backdrop-blur-md bg-ink-950/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        ${logo('sm')}
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="_soundOn=!_soundOn;render()" class="btn btn-ghost !p-2.5 !px-2.5" title="${_soundOn?'Som ativado':'Som desativado'}">
+            ${_soundOn?Icons.bell({size:16}):Icons.bellOff({size:16,cls:'text-ink-400'})}
+          </button>
+          <button onclick="navigate('history')" class="btn btn-ghost text-sm hidden sm:inline-flex">
+            ${Icons.history({size:16})} Histórico
+          </button>
+          <div class="flex items-center gap-3 pl-2 sm:pl-3 border-l border-white/10">
+            ${avatar(currentUser,{size:'sm', online:true, busy:isMe})}
+            <div class="hidden sm:block text-right leading-tight">
+              <div class="text-sm font-medium text-white">${currentUser}</div>
+              <div class="text-[11px] text-ink-300">Conectado</div>
+            </div>
+            <button onclick="logout()" class="btn btn-ghost !p-2.5 !px-2.5" title="Sair">
+              ${Icons.logout({size:16})}
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      ${statusCard}
+
+      <div class="grid lg:grid-cols-3 gap-6 mt-6">
+        <div class="lg:col-span-2 card animate-slide-up">
+          <div class="text-xs uppercase tracking-[0.25em] text-ink-300 mb-3">Ações rápidas</div>
+          <h3 class="font-display text-xl text-white font-semibold mb-5">
+            ${inUse ? (isMe ? 'Você está utilizando agora' : `${session.user} está utilizando`) : 'Quando começar, registre aqui'}
+          </h3>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <button onclick="handleStart()" ${(inUse && !isMe)?'disabled':''} class="btn btn-primary py-4 text-base ${!inUse?'animate-glow-pulse':''}">
+              ${Icons.play({size:20})} Começar uso
+            </button>
+            <button onclick="handleStop()" ${!isMe?'disabled':''} class="btn btn-danger py-4 text-base">
+              ${Icons.square({size:20})} Finalizar uso
+            </button>
+          </div>
+          <button onclick="navigate('history')" class="btn btn-ghost sm:hidden mt-3 w-full justify-center">
+            ${Icons.history({size:16})} Ver histórico
+          </button>
+          <div class="mt-6 pt-6 border-t border-white/5 flex items-center justify-between flex-wrap gap-3">
+            <div class="text-xs text-ink-300">
+              Powered by <span class="text-vivo-300 font-medium">Vivo</span> · A vida pede mais que tecnologia
+            </div>
+            <div class="font-display text-sm bg-gradient-to-r from-vivo-200 to-magenta bg-clip-text text-transparent font-semibold tracking-tight">
+              DESISTIR É OPÇÃO SIM
+            </div>
+          </div>
+        </div>
+
+        <div class="card animate-slide-up" style="animation-delay:80ms">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2">
+              ${Icons.users({size:16,cls:'text-vivo-300'})}
+              <h3 class="font-display font-semibold text-white">Equipe</h3>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 font-mono">
+              ${onlineCount}/${TEAM.length} online
+            </span>
+          </div>
+          <ul class="space-y-2">${teamList}</ul>
+        </div>
+      </div>
+    </main>
+  </div>`
+}
+
+function handleStart(){
+  const result = startUsing(currentUser)
+  if(!result.ok){
+    playSound('conflict')
+    conflict = result.by
+    render()
+  } else {
+    playSound('start')
+    showToast('success','Sessão iniciada!')
+  }
+}
+function handleStop(){
+  const result = stopUsing(currentUser)
+  if(result.ok){
+    playSound('stop')
+    showToast('success','Sessão finalizada')
+  }
+}
+
+// ---------- HISTORY ----------
+function renderHistory(){
+  const items = getHistory()
+  const filtered = historyFilter === 'Todos' ? items : items.filter(i=>i.user===historyFilter)
+  const total = filtered.reduce((a,i)=>a+(i.duration||0),0)
+  const count = filtered.length
+  const avg = count ? Math.round(total/count) : 0
+  const byUser = filtered.reduce((acc,i)=>{ acc[i.user]=(acc[i.user]||0)+(i.duration||0); return acc },{})
+  const topEntry = Object.entries(byUser).sort((a,b)=>b[1]-a[1])[0]
+  const top = topEntry ? {name:topEntry[0], sec:topEntry[1]} : null
+
+  const filters = ['Todos',...TEAM]
+
+  let list
+  if(filtered.length===0){
+    list = `<div class="p-12 text-center">
+      <div class="text-5xl mb-3 opacity-50">📭</div>
+      <div class="text-ink-200">Nenhum registro encontrado.</div>
+    </div>`
+  } else {
+    list = `<ul class="divide-y divide-white/5">
+      ${filtered.map((item,i)=>`
+        <li style="animation-delay:${Math.min(i,12)*20}ms" class="animate-slide-up flex items-center justify-between gap-4 px-4 sm:px-6 py-4 hover:bg-white/[0.025] transition">
+          <div class="flex items-center gap-4 min-w-0">
+            ${avatar(item.user,{size:'sm'})}
+            <div class="min-w-0">
+              <div class="text-white font-medium truncate">${item.user}</div>
+              <div class="text-xs text-ink-300">
+                ${formatDateTime(item.startedAt)} → ${new Date(item.endedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+              </div>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="font-mono text-lg text-white tabular-nums">${formatDuration(item.duration)}</div>
+            <div class="text-[11px] text-ink-300 uppercase tracking-wider">Duração</div>
+          </div>
+        </li>`).join('')}
+    </ul>`
+  }
+
+  return `
+  <div class="relative min-h-screen screen">
+    <div class="aurora opacity-40"></div>
+    <div class="absolute inset-0 grid-bg pointer-events-none"></div>
+
+    <header class="relative z-10 border-b border-white/5 backdrop-blur-md bg-ink-950/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        ${logo('sm')}
+        <button onclick="navigate('dashboard')" class="btn btn-ghost text-sm">
+          ${Icons.arrowLeft({size:16})} Voltar
+        </button>
+      </div>
+    </header>
+
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <div>
+        <div class="text-xs uppercase tracking-[0.25em] text-ink-300 mb-2">Registro de uso</div>
+        <h1 class="font-display text-3xl sm:text-4xl text-white font-semibold">Histórico</h1>
+        <p class="text-ink-300 mt-1">Auditoria completa de todas as sessões do Simplifique.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        ${statCard('Total registrado', formatDuration(total), null, 'clock')}
+        ${statCard('Sessões', count, null, 'trending')}
+        ${statCard('Duração média', formatDuration(avg), null, 'clock')}
+        ${statCard('Maior tempo', top?top.name:'—', top?formatDuration(top.sec):'', 'trending')}
+      </div>
+
+      <div class="card !p-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          ${Icons.filter({size:16,cls:'text-ink-300 mr-1'})}
+          ${filters.map(f=>`
+            <button onclick="historyFilter='${f}';render()" class="px-3 py-1.5 rounded-full text-sm font-medium transition
+              ${historyFilter===f
+                ? 'bg-vivo-500/20 text-vivo-100 border border-vivo-400/40'
+                : 'bg-white/[0.04] text-ink-200 border border-white/5 hover:bg-white/[0.08]'}">${f}</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="card !p-0 overflow-hidden">${list}</div>
+    </main>
+  </div>`
+}
+
+function statCard(label,value,sub,iconKey){
+  return `
+    <div class="card !p-5">
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-[11px] uppercase tracking-[0.2em] text-ink-300">${label}</div>
+        ${Icons[iconKey]({size:16,cls:'text-vivo-300'})}
+      </div>
+      <div class="font-display text-2xl text-white font-semibold tabular-nums">${value}</div>
+      ${sub?`<div class="text-xs text-ink-300 mt-1 font-mono">${sub}</div>`:''}
+    </div>`
+}
+
+// ---------- MODAL + TOAST ----------
+function renderConflict(){
+  if(!conflict) return ''
+  return `
+  <div class="modal-overlay" onclick="conflict=null;render()">
+    <div class="modal-box relative w-full max-w-md glass-strong rounded-3xl p-8 shadow-2xl border border-rose-500/30" onclick="event.stopPropagation()">
+      <button onclick="conflict=null;render()" class="absolute top-4 right-4 text-ink-300 hover:text-white transition">
+        ${Icons.x({size:20})}
+      </button>
+      <div class="flex flex-col items-center text-center">
+        <div class="relative mb-5">
+          <div class="absolute inset-0 rounded-full bg-rose-500/30 blur-xl pulse"></div>
+          <div class="relative w-16 h-16 rounded-full bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center shadow-lg">
+            ${Icons.alert({size:32,cls:'text-white'})}
+          </div>
+        </div>
+        <h2 class="font-display text-2xl font-semibold text-white">Sistema em uso</h2>
+        <p class="mt-2 text-ink-200">
+          O <span class="text-vivo-300 font-medium">Simplifique</span> já está sendo utilizado por:
+        </p>
+        <div class="mt-5 flex items-center gap-3 px-5 py-3 rounded-2xl bg-ink-900/60 border border-white/5">
+          ${avatar(conflict,{size:'md',busy:true})}
+          <div class="text-left">
+            <div class="font-semibold text-white">${conflict}</div>
+            <div class="text-xs text-ink-300">Em uso agora</div>
+          </div>
+        </div>
+        <p class="mt-5 text-sm text-ink-300">
+          Aguarde a finalização para iniciar uma nova sessão.
+        </p>
+        <button onclick="conflict=null;render()" class="btn btn-primary mt-6 w-full">Entendi</button>
+      </div>
+    </div>
+  </div>`
+}
+function renderToast(){
+  if(!toast) return ''
+  const icons = {
+    success: Icons.check({size:18,cls:'text-emerald-400'}),
+    error:   Icons.alert({size:18,cls:'text-rose-400'}),
+    info:    Icons.info({size:18,cls:'text-vivo-300'})
+  }
+  return `
+  <div class="toast glass-strong rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl border border-white/10 max-w-sm">
+    ${icons[toast.type]||icons.info}
+    <span class="text-sm text-white">${toast.message}</span>
+    <button onclick="toast=null;render()" class="ml-2 text-ink-300 hover:text-white text-xs">✕</button>
+  </div>`
+}
+
+// ---------- MAIN RENDER ----------
+function render(){
+  const root = document.getElementById('root')
+  let main = ''
+  if(route==='login') main = renderLogin()
+  else if(route==='dashboard') main = renderDashboard()
+  else if(route==='history') main = renderHistory()
+
+  root.innerHTML = main + renderConflict() + renderToast()
+
+  // setup live timer interval
+  if(timerInterval) clearInterval(timerInterval)
+  if(route==='dashboard'){
+    const sess = getSession()
+    if(sess.user){
+      timerInterval = setInterval(()=>{
+        const s = getSession()
+        if(!s.user){ render(); return }
+        const el = document.getElementById('liveTimer')
+        if(el){
+          const secs = Math.floor((Date.now()-new Date(s.startedAt).getTime())/1000)
+          el.textContent = formatDuration(secs)
+        }
+      }, 1000)
+    }
+  }
+}
+
+// ---------- REALTIME / EVENTS ----------
+// Detecta mudanças entre abas (storage event) e na aba atual (custom event)
+function handleStateChange(){
+  // Detecta mudança de sessão para tocar som
+  const s = getSession()
+  if(prevSessionUser !== undefined && s.user !== prevSessionUser){
+    if(s.user && s.user !== currentUser){
+      playSound('notify')
+      showToast('info', `${s.user} começou a usar o Simplifique`)
+    } else if(!s.user && prevSessionUser){
+      showToast('success','O Simplifique está livre agora')
+    }
+  }
+  prevSessionUser = s.user
+  render()
+}
+window.addEventListener('storage', handleStateChange)
+window.addEventListener('ms-state', handleStateChange)
+
+// Heartbeat
+function startHeartbeat(){
+  if(heartbeatInterval) clearInterval(heartbeatInterval)
+  heartbeatInterval = setInterval(()=>{
+    if(currentUser){ heartbeat(currentUser); render() }
+    pruneOnline()
+  }, 15_000)
+}
+window.addEventListener('beforeunload', ()=>{
+  if(currentUser) goOffline(currentUser)
+})
+
+// Boot
+if(currentUser){
+  heartbeat(currentUser)
+  prevSessionUser = getSession().user
+}
+startHeartbeat()
+render()
+</script>
+
+</body>
+</html>
